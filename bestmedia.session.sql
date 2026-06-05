@@ -102,3 +102,20 @@ CREATE TABLE favorites (
     provider_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE favorites
+ADD FOREIGN KEY (client_id) REFERENCES users(user_id) ON DELETE CASCADE,
+ADD FOREIGN KEY (provider_id) REFERENCES users(user_id) ON DELETE CASCADE;
+//User Addresses
+CREATE TABLE user_addresses (
+    address_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    address_line1 VARCHAR(255) NOT NULL,
+    address_line2 VARCHAR(255),
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE user_addresses
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
