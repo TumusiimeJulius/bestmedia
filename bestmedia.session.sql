@@ -48,3 +48,33 @@ CREATE TABLE availability (
         REFERENCES users(user_id)
         ON DELETE CASCADE
 );
+//Create Payments Table
+CREATE TABLE payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+
+    booking_id INT NOT NULL,
+
+    amount DECIMAL(10,2) NOT NULL,
+
+    payment_method ENUM(
+        'MTN_MOMO',
+        'AIRTEL_MONEY',
+        'CARD'
+    ),
+
+    transaction_reference VARCHAR(100) UNIQUE,
+
+    payment_status ENUM(
+        'pending',
+        'successful',
+        'failed'
+    ) DEFAULT 'pending',
+
+    paid_at TIMESTAMP NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (booking_id)
+        REFERENCES bookings(booking_id)
+        ON DELETE CASCADE
+);
