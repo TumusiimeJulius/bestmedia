@@ -194,3 +194,14 @@ CREATE TABLE notifications (
 );
 ALTER TABLE notifications
 ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
+//Reminders
+CREATE TABLE reminders (
+    reminder_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    content TEXT NOT NULL,
+    remind_at TIMESTAMP NOT NULL,
+    is_sent BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE reminders
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
