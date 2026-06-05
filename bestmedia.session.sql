@@ -266,3 +266,26 @@ CREATE TABLE two_factor_auth (
 );
 ALTER TABLE two_factor_auth
 ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
+//bookings
+CREATE TABLE bookings (
+    booking_id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id INT NOT NULL,
+    service_id INT NOT NULL,
+    provider_id INT NOT NULL,
+    booking_date DATE NOT NULL,
+    booking_time TIME NOT NULL,
+    status ENUM('pending','confirmed','completed','canceled') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (client_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (service_id)
+        REFERENCES services(service_id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (provider_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE
+);
