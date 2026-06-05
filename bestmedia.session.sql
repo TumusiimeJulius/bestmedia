@@ -119,3 +119,13 @@ CREATE TABLE user_addresses (
 );
 ALTER TABLE user_addresses
 ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
+//Booking Status History
+CREATE TABLE booking_status_history (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    old_status ENUM('pending','confirmed','completed','canceled') NOT NULL,
+    new_status ENUM('pending','confirmed','completed','canceled') NOT NULL,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE booking_status_history
+ADD FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE;
