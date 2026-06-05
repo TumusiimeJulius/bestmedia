@@ -151,3 +151,13 @@ CREATE TABLE refunds (
 );
 ALTER TABLE refunds
 ADD FOREIGN KEY (payment_id) REFERENCES payments(payment_id) ON DELETE CASCADE;
+//Invoices
+CREATE TABLE invoices (
+    invoice_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    invoice_number VARCHAR(100) UNIQUE NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE invoices
+ADD FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE;
