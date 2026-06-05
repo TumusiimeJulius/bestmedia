@@ -26,3 +26,25 @@ CREATE TABLE services (
         REFERENCES users(user_id)
         ON DELETE CASCADE
 );
+//Create Availability Table
+CREATE TABLE availability (
+    availability_id INT AUTO_INCREMENT PRIMARY KEY,
+    provider_id INT NOT NULL,
+
+    day_of_week ENUM(
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday'
+    ),
+
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+
+    FOREIGN KEY (provider_id)
+        REFERENCES users(user_id)
+        ON DELETE CASCADE
+);
