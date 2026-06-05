@@ -140,3 +140,14 @@ CREATE TABLE session_notes (
 ALTER TABLE session_notes
 ADD FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
 ADD FOREIGN KEY (provider_id) REFERENCES users(user_id) ON DELETE CASCADE);
+//Refunds
+CREATE TABLE refunds (
+    refund_id INT AUTO_INCREMENT PRIMARY KEY,
+    payment_id INT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    reason TEXT,
+    refund_status ENUM('pending','approved','rejected') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE refunds
+ADD FOREIGN KEY (payment_id) REFERENCES payments(payment_id) ON DELETE CASCADE;
