@@ -215,3 +215,13 @@ CREATE TABLE activity_tracking (
 );
 ALTER TABLE activity_tracking
 ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
+//Refresh Tokens Table
+CREATE TABLE refresh_tokens (
+    token_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE refresh_tokens
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
