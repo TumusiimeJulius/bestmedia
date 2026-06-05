@@ -299,3 +299,21 @@ CREATE TABLE service_categories (
 ALTER TABLE services
 ADD COLUMN category_id INT,
 ADD FOREIGN KEY (category_id) REFERENCES service_categories(category_id) ON DELETE SET NULL;
+//Add to services:
+ALTER TABLE services
+ADD COLUMN category_id INT,
+ADD FOREIGN KEY (category_id) REFERENCES service_categories(category_id) ON DELETE SET NULL;
+//Provider Profiles
+CREATE TABLE provider_profiles (
+    profile_id INT AUTO_INCREMENT PRIMARY KEY,
+    provider_id INT NOT NULL,
+    bio TEXT,
+    profile_picture VARCHAR(255),
+    specialization VARCHAR(100),
+    experience_years INT,
+    website VARCHAR(255),
+
+    FOREIGN KEY (provider_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE
+);
