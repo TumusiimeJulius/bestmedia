@@ -524,3 +524,12 @@ CREATE INDEX idx_login_history_login_time ON login_history(login_time);
 CREATE INDEX idx_two_factor_auth_is_enabled ON two_factor_auth(is_enabled);
 CREATE INDEX idx_booking_attachments_booking_id ON booking_attachments(booking_id);
 CREATE INDEX idx_booking_attachments_file_type ON booking_attachments(file_type);
+ALTER TABLE bookings
+ADD CONSTRAINT unique_provider_slot
+UNIQUE(
+    provider_id,
+    booking_date,
+    booking_time
+);
+ALTER TABLE users
+ADD COLUMN deleted_at TIMESTAMP NULL;
