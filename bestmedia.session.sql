@@ -413,4 +413,16 @@ ALTER TABLE payments
 ADD COLUMN final_amount_after_refund DECIMAL(10,2) NOT NULL);
 //Add is_partial_refund to payments
 ALTER TABLE payments
-//
+//Booking Attachments
+CREATE TABLE booking_attachments (
+    attachment_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    file_type VARCHAR(50),
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (booking_id)
+    REFERENCES bookings(booking_id)
+    ON DELETE CASCADE
+);
+
