@@ -129,3 +129,14 @@ CREATE TABLE booking_status_history (
 );
 ALTER TABLE booking_status_history
 ADD FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE;
+//Session Notes
+CREATE TABLE session_notes (
+    note_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    provider_id INT NOT NULL,
+    note TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE session_notes
+ADD FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
+ADD FOREIGN KEY (provider_id) REFERENCES users(user_id) ON DELETE CASCADE);
