@@ -289,3 +289,13 @@ CREATE TABLE bookings (
         REFERENCES users(user_id)
         ON DELETE CASCADE
 );
+//Service Categories
+
+CREATE TABLE service_categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE services
+ADD COLUMN category_id INT,
+ADD FOREIGN KEY (category_id) REFERENCES service_categories(category_id) ON DELETE SET NULL;
