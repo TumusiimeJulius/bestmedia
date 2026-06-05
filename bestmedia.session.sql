@@ -94,3 +94,11 @@ CREATE TABLE reviews (
         REFERENCES bookings(booking_id)
         ON DELETE CASCADE
 );
+//User Features
+//Favorites
+CREATE TABLE favorites (
+    favorite_id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id INT,
+    provider_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
