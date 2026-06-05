@@ -317,3 +317,14 @@ CREATE TABLE provider_profiles (
     REFERENCES users(user_id)
     ON DELETE CASCADE
 );
+//Payment Callback Logs
+CREATE TABLE payment_logs (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    payment_id INT,
+    response_data JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(payment_id)
+    REFERENCES payments(payment_id)
+    ON DELETE CASCADE
+);
