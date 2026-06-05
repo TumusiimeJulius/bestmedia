@@ -428,3 +428,14 @@ CREATE TABLE booking_attachments (
 //Add attachment_count to bookings
 ALTER TABLE bookings
 ADD COLUMN attachment_count INT DEFAULT 0;
+
+//Add Authentication Fields to Users
+ALTER TABLE users
+ADD COLUMN last_login TIMESTAMP NULL,
+ADD COLUMN is_email_verified BOOLEAN DEFAULT FALSE,
+ADD COLUMN email_verification_token VARCHAR(255),
+ADD COLUMN email_verification_expires_at TIMESTAMP NULL,
+ADD COLUMN password_reset_token VARCHAR(255),
+ADD COLUMN password_reset_expires_at TIMESTAMP NULL,
+ADD COLUMN two_factor_secret VARCHAR(255),
+ADD COLUMN is_two_factor_enabled BOOLEAN DEFAULT FALSE;
