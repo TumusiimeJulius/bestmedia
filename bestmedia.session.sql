@@ -340,4 +340,77 @@ CREATE TABLE meetings (
     REFERENCES bookings(booking_id)
     ON DELETE CASCADE
 );
-
+//Coupons / Promo Codes
+CREATE TABLE coupons (
+    coupon_id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    discount_type ENUM('percentage','fixed') NOT NULL,
+    discount_value DECIMAL(10,2) NOT NULL,
+    valid_from DATE NOT NULL,
+    valid_to DATE NOT NULL,
+    usage_limit INT,
+    times_used INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bookings
+ADD COLUMN coupon_id INT,
+ADD FOREIGN KEY (coupon_id) REFERENCES coupons(coupon_id) ON DELETE SET NULL;
+//add coupon_id to payments
+ALTER TABLE payments
+ADD COLUMN coupon_id INT,
+ADD FOREIGN KEY (coupon_id) REFERENCES coupons(coupon_id) ON DELETE SET NULL;
+//Add discount_amount to payments
+ALTER TABLE payments
+ADD COLUMN discount_amount DECIMAL(10,2) DEFAULT 0;
+//Add total_amount to payments
+ALTER TABLE payments
+ADD COLUMN total_amount DECIMAL(10,2) NOT NULL;
+//Add final_amount to payments
+ALTER TABLE payments
+ADD COLUMN final_amount DECIMAL(10,2) NOT NULL;
+//Add applied_coupon_code to payments
+ALTER TABLE payments
+ADD COLUMN applied_coupon_code VARCHAR(50);
+//Add is_refunded to payments
+ALTER TABLE payments
+ADD COLUMN is_refunded BOOLEAN DEFAULT FALSE;
+//Add refund_amount to payments
+ALTER TABLE payments
+ADD COLUMN refund_amount DECIMAL(10,2) DEFAULT 0);
+//Add refund_reason to payments
+ALTER TABLE payments
+ADD COLUMN refund_reason TEXT;
+//Add refund_status to payments
+ALTER TABLE payments
+ADD COLUMN refund_status ENUM('pending','approved','rejected') DEFAULT 'pending');
+//Add refunded_at to payments
+ALTER TABLE payments
+ADD COLUMN refunded_at TIMESTAMP NULL;
+//Add refund_transaction_reference to payments
+ALTER TABLE payments
+ADD COLUMN refund_transaction_reference VARCHAR(100) UNIQUE;
+//Add refund_payment_method to payments
+ALTER TABLE payments
+ADD COLUMN refund_payment_method ENUM('MTN_MOMO','AIRTEL_MONEY','CARD');
+//Add refund_notes to payments
+ALTER TABLE payments
+ADD COLUMN refund_notes TEXT;
+//Add is_coupon_applied to payments
+ALTER TABLE payments
+ADD COLUMN is_coupon_applied BOOLEAN DEFAULT FALSE;
+//Add coupon_discount_amount to payments
+ALTER TABLE payments
+ADD COLUMN coupon_discount_amount DECIMAL(10,2) DEFAULT 0);
+//Add coupon_code to payments
+ALTER TABLE payments
+ADD COLUMN coupon_code VARCHAR(50);
+//Add original_amount to payments
+ALTER TABLE payments
+ADD COLUMN original_amount DECIMAL(10,2) NOT NULL;
+//Add final_amount_after_refund to payments
+ALTER TABLE payments
+ADD COLUMN final_amount_after_refund DECIMAL(10,2) NOT NULL);
+//Add is_partial_refund to payments
+ALTER TABLE payments
+//
