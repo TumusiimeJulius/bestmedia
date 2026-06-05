@@ -205,3 +205,13 @@ CREATE TABLE reminders (
 );
 ALTER TABLE reminders
 ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
+//Activity Tracking
+CREATE TABLE activity_tracking (
+    activity_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    activity_type VARCHAR(100) NOT NULL,
+    activity_details TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE activity_tracking
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
