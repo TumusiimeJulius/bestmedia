@@ -425,4 +425,6 @@ CREATE TABLE booking_attachments (
     REFERENCES bookings(booking_id)
     ON DELETE CASCADE
 );
-
+//Add attachment_count to bookings
+ALTER TABLE bookings
+ADD COLUMN attachment_count INT DEFAULT 0;
