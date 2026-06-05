@@ -245,3 +245,24 @@ CREATE TABLE email_verification_tokens (
 );
 ALTER TABLE email_verification_tokens
 ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE);
+//Login History
+CREATE TABLE login_history (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip_address VARCHAR(45),
+    user_agent TEXT
+);
+ALTER TABLE login_history
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
+//Two-Factor Authentication
+
+CREATE TABLE two_factor_auth (
+    auth_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    secret VARCHAR(255) NOT NULL,
+    is_enabled BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE two_factor_auth
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
