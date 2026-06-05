@@ -533,3 +533,302 @@ UNIQUE(
 );
 ALTER TABLE users
 ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_users_deleted_at ON users(deleted_at);
+ALTER TABLE services
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_services_deleted_at ON services(deleted_at);
+ALTER TABLE bookings
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_bookings_deleted_at ON bookings(deleted_at);
+ALTER TABLE payments
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_payments_deleted_at ON payments(deleted_at);
+ALTER TABLE reviews
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_reviews_deleted_at ON reviews(deleted_at);
+ALTER TABLE favorites
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_favorites_deleted_at ON favorites(deleted_at);
+ALTER TABLE user_addresses
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_user_addresses_deleted_at ON user_addresses(deleted_at);
+ALTER TABLE booking_status_history
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_booking_status_history_deleted_at ON booking_status_history(deleted_at);
+ALTER TABLE session_notes
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_session_notes_deleted_at ON session_notes(deleted_at);
+ALTER TABLE refunds
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_refunds_deleted_at ON refunds(deleted_at);
+ALTER TABLE invoices
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_invoices_deleted_at ON invoices(deleted_at);
+ALTER TABLE audit_logs
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_audit_logs_deleted_at ON audit_logs(deleted_at);
+ALTER TABLE messages
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_messages_deleted_at ON messages(deleted_at);
+ALTER TABLE notifications
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_notifications_deleted_at ON notifications(deleted_at);
+ALTER TABLE reminders
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_reminders_deleted_at ON reminders(deleted_at);
+ALTER TABLE activity_tracking
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_activity_tracking_deleted_at ON activity_tracking(deleted_at);
+ALTER TABLE refresh_tokens
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_refresh_tokens_deleted_at ON refresh_tokens(deleted_at);
+ALTER TABLE password_reset_tokens
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_password_reset_tokens_deleted_at ON password_reset_tokens(deleted_at);
+ALTER TABLE email_verification_tokens
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_email_verification_tokens_deleted_at ON email_verification_tokens(deleted_at);
+ALTER TABLE login_history
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_login_history_deleted_at ON login_history(deleted_at);
+ALTER TABLE two_factor_auth
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_two_factor_auth_deleted_at ON two_factor_auth(deleted_at);
+ALTER TABLE service_categories
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_service_categories_deleted_at ON service_categories(deleted_at);
+ALTER TABLE provider_profiles
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_provider_profiles_deleted_at ON provider_profiles(deleted_at);
+ALTER TABLE payment_logs
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_payment_logs_deleted_at ON payment_logs(deleted_at);
+ALTER TABLE meetings
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_meetings_deleted_at ON meetings(deleted_at);
+ALTER TABLE coupons
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_coupons_deleted_at ON coupons(deleted_at);
+//Add is_deleted to users
+ALTER TABLE users
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_users_is_deleted ON users(is_deleted);
+//Add is_deleted to services
+ALTER TABLE services
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_services_is_deleted ON services(is_deleted);
+//Add is_deleted to bookings
+ALTER TABLE bookings
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_bookings_is_deleted ON bookings(is_deleted);
+//Add is_deleted to payments
+ALTER TABLE payments
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_payments_is_deleted ON payments(is_deleted);
+//Add is_deleted to reviews
+ALTER TABLE reviews
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_reviews_is_deleted ON reviews(is_deleted);
+//Add is_deleted to favorites
+ALTER TABLE favorites
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_favorites_is_deleted ON favorites(is_deleted);
+//Add is_deleted to user_addresses
+ALTER TABLE user_addresses
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_user_addresses_is_deleted ON user_addresses(is_deleted);
+//Add is_deleted to booking_status_history
+ALTER TABLE booking_status_history
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_booking_status_history_is_deleted ON booking_status_history(is_deleted);
+//Add is_deleted to session_notes
+ALTER TABLE session_notes
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_session_notes_is_deleted ON session_notes(is_deleted);
+//Add is_deleted to refunds
+ALTER TABLE refunds
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_refunds_is_deleted ON refunds(is_deleted);
+//Add is_deleted to invoices
+ALTER TABLE invoices
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_invoices_is_deleted ON invoices(is_deleted);
+ALTER TABLE audit_logs
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_audit_logs_is_deleted ON audit_logs(is_deleted);
+ALTER TABLE messages
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_messages_is_deleted ON messages(is_deleted);
+ALTER TABLE notifications
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_notifications_is_deleted ON notifications(is_deleted);
+ALTER TABLE reminders
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_reminders_is_deleted ON reminders(is_deleted);
+ALTER TABLE activity_tracking
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_activity_tracking_is_deleted ON activity_tracking(is_deleted);
+ALTER TABLE refresh_tokens
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_refresh_tokens_is_deleted ON refresh_tokens(is_deleted);
+ALTER TABLE password_reset_tokens
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_password_reset_tokens_is_deleted ON password_reset_tokens(is_deleted);
+ALTER TABLE email_verification_tokens
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_email_verification_tokens_is_deleted ON email_verification_tokens(is_deleted);
+ALTER TABLE login_history
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_login_history_is_deleted ON login_history(is_deleted);
+ALTER TABLE two_factor_auth
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_two_factor_auth_is_deleted ON two_factor_auth(is_deleted);
+ALTER TABLE service_categories
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_service_categories_is_deleted ON service_categories(is_deleted);
+ALTER TABLE provider_profiles
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_provider_profiles_is_deleted ON provider_profiles(is_deleted);
+ALTER TABLE payment_logs
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_payment_logs_is_deleted ON payment_logs(is_deleted);
+ALTER TABLE meetings
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_meetings_is_deleted ON meetings(is_deleted);
+ALTER TABLE coupons
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_coupons_is_deleted ON coupons(is_deleted);
+//Add is_archived to users
+ALTER TABLE users
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_users_is_archived ON users(is_archived);
+//Add is_archived to services
+ALTER TABLE services
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_services_is_archived ON services(is_archived);
+//Add is_archived to bookings
+ALTER TABLE bookings
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_bookings_is_archived ON bookings(is_archived);
+//Add is_archived to payments
+ALTER TABLE payments
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_payments_is_archived ON payments(is_archived);
+//Add is_archived to reviews
+ALTER TABLE reviews
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_reviews_is_archived ON reviews(is_archived);
+//Add is_archived to favorites
+ALTER TABLE favorites
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_favorites_is_archived ON favorites(is_archived);
+ALTER TABLE user_addresses
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_user_addresses_is_archived ON user_addresses(is_archived);
+ALTER TABLE booking_status_history
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_booking_status_history_is_archived ON booking_status_history(is_archived);
+ALTER TABLE session_notes
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_session_notes_is_archived ON session_notes(is_archived);
+ALTER TABLE refunds
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_refunds_is_archived ON refunds(is_archived);
+ALTER TABLE invoices
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_invoices_is_archived ON invoices(is_archived);
+ALTER TABLE audit_logs
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_audit_logs_is_archived ON audit_logs(is_archived);
+ALTER TABLE messages
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_messages_is_archived ON messages(is_archived);
+ALTER TABLE notifications
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_notifications_is_archived ON notifications(is_archived);
+ALTER TABLE reminders
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_reminders_is_archived ON reminders(is_archived);
+ALTER TABLE activity_tracking
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_activity_tracking_is_archived ON activity_tracking(is_archived);
+ALTER TABLE refresh_tokens
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_refresh_tokens_is_archived ON refresh_tokens(is_archived);
+ALTER TABLE password_reset_tokens
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_password_reset_tokens_is_archived ON password_reset_tokens(is_archived);
+ALTER TABLE email_verification_tokens
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_email_verification_tokens_is_archived ON email_verification_tokens(is_archived);
+ALTER TABLE login_history
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_login_history_is_archived ON login_history(is_archived);
+ALTER TABLE two_factor_auth
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_two_factor_auth_is_archived ON two_factor_auth(is_archived);
+ALTER TABLE service_categories
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_service_categories_is_archived ON service_categories(is_archived);
+ALTER TABLE provider_profiles
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_provider_profiles_is_archived ON provider_profiles(is_archived);
+ALTER TABLE payment_logs
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_payment_logs_is_archived ON payment_logs(is_archived);
+ALTER TABLE meetings
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_meetings_is_archived ON meetings(is_archived);
+ALTER TABLE coupons
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_coupons_is_archived ON coupons(is_archived);
+//Add is_archived to booking_attachments
+ALTER TABLE booking_attachments
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_booking_attachments_is_archived ON booking_attachments(is_archived);
+//Add is_deleted to booking_attachments
+ALTER TABLE booking_attachments
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_booking_attachments_is_deleted ON booking_attachments(is_deleted);
+//Add deleted_at to booking_attachments
+ALTER TABLE booking_attachments
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_booking_attachments_deleted_at ON booking_attachments(deleted_at);
+//Add is_deleted to meetings
+ALTER TABLE meetings
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_meetings_is_deleted ON meetings(is_deleted);
+//Add deleted_at to meetings
+ALTER TABLE meetings
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_meetings_deleted_at ON meetings(deleted_at);
+//Add is_archived to meetings
+ALTER TABLE meetings
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_meetings_is_archived ON meetings(is_archived);
+//Add is_deleted to coupons
+ALTER TABLE coupons
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_coupons_is_deleted ON coupons(is_deleted);
+//Add deleted_at to coupons
+ALTER TABLE coupons
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_coupons_deleted_at ON coupons(deleted_at);
+//Add is_archived to coupons
+ALTER TABLE coupons
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_coupons_is_archived ON coupons(is_archived);
+//Add is_deleted to provider_profiles
+ALTER TABLE provider_profiles
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_provider_profiles_is_deleted ON provider_profiles(is_deleted);
+//Add deleted_at to provider_profiles
+ALTER TABLE provider_profiles
+ADD COLUMN deleted_at TIMESTAMP NULL;
+CREATE INDEX idx_provider_profiles_deleted_at ON provider_profiles(deleted_at);
+//Add is_archived to provider_profiles
+ALTER TABLE provider_profiles
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+CREATE INDEX idx_provider_profiles_is_archived ON provider_profiles(is_archived);
+//Add refund_payment_method to payments
+ALTER TABLE payments
