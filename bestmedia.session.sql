@@ -225,3 +225,23 @@ CREATE TABLE refresh_tokens (
 );
 ALTER TABLE refresh_tokens
 ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
+//Password Reset Tokens Table
+CREATE TABLE password_reset_tokens (
+    token_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE password_reset_tokens
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE);
+//Email Verification Tokens Table
+CREATE TABLE email_verification_tokens (
+    token_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE email_verification_tokens
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE);
