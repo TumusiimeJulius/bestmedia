@@ -328,3 +328,16 @@ CREATE TABLE payment_logs (
     REFERENCES payments(payment_id)
     ON DELETE CASCADE
 );
+//Meeting Links
+CREATE TABLE meetings (
+    meeting_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    meeting_link VARCHAR(500),
+    platform VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(booking_id)
+    REFERENCES bookings(booking_id)
+    ON DELETE CASCADE
+);
+
