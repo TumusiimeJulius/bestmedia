@@ -108,6 +108,17 @@ textarea {
   font: inherit;
 }
 
+.phone-field {
+  display: grid;
+  grid-template-columns: minmax(170px, 220px) minmax(220px, 1fr);
+  gap: 10px;
+}
+
+.phone-field select,
+.phone-field input {
+  min-width: 0;
+}
+
 button,
 button.secondary {
   border: none;
@@ -244,6 +255,10 @@ button:focus-visible {
   .dashboard-header {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .phone-field {
+    grid-template-columns: 1fr;
   }
 }
 

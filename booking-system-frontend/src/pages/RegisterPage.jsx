@@ -59,13 +59,20 @@ export default function RegisterPage() {
           </label>
           <label>
             Phone number
-            <div style={{ display: 'flex', gap: 8 }}>
-              <select name="dial_code" value={form.dial_code} onChange={handleChange} style={{ minWidth: 160 }}>
+            <div className="phone-field">
+              <select name="dial_code" value={form.dial_code} onChange={handleChange} aria-label="Country code">
                 {countryCodes.map((c) => (
                   <option key={c.code} value={c.dial_code}>{c.name} ({c.dial_code})</option>
                 ))}
               </select>
-              <input type="tel" name="phone" value={form.phone} onChange={handleChange} required style={{ flex: 1 }} />
+              <input
+                type="tel"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder="Enter phone number"
+                required
+              />
             </div>
           </label>
           <label>
