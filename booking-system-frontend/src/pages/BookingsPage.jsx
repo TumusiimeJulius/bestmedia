@@ -64,7 +64,7 @@ export default function BookingsPage() {
                     <strong>Time:</strong> {booking.booking_time}
                   </p>
                   <p>
-                    <strong>Price:</strong> ${booking.price.toFixed(2)}
+                    <strong>Price:</strong> ${Number(booking.price).toFixed(2)}
                   </p>
                   <p>
                     <strong>Duration:</strong> {booking.duration_minutes} min
