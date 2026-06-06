@@ -12,30 +12,36 @@ async function request(endpoint, token) {
         },
   });
 
-  const body = await response.json();
   if (!response.ok) {
-    throw new Error(body.message || 'Unable to fetch data');
+    const body = await response.json();
+    throw new Error(body.message || `Request failed with status ${response.status}`);
   }
 
-  return body;
+  return await response.json();
 }
 
-async function send(endpoint, data, token) {
-  const response = await fetch(`${API_BASE}/${endpoint}`, {
-    method: 'POST',
+async function send(endpoint, data, token, method = 'POST') {
+  const options = {
+    method,
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data),
-  });
+  };
 
-  const body = await response.json();
-  if (!response.ok) {
-    throw new Error(body.message || 'Request failed');
+  // Only add body for methods that support it, and skip empty objects for DELETE
+  if (method !== 'DELETE') {
+    options.body = JSON.stringify(data);
   }
 
-  return body;
+  const response = await fetch(`${API_BASE}/${endpoint}`, options);
+
+  if (!response.ok) {
+    const body = await response.json();
+    throw new Error(body.message || `Request failed with status ${response.status}`);
+  }
+
+  return await response.json();
 }
 
 export function fetchServices() {
@@ -52,4 +58,12 @@ export function fetchCategories() {
 
 export function createService(payload, token) {
   return send('provider/services', payload, token);
+}
+
+export function updateService(serviceId, payload, token) {
+  return send(`provider/services/${serviceId}`, payload, token, 'PUT');
+}
+
+export function deleteService(serviceId, token) {
+  return send(`provider/services/${serviceId}`, {}, token, 'DELETE');
 }

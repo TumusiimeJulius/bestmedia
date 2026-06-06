@@ -67,6 +67,7 @@ CREATE TABLE services (
     description TEXT,
     duration_minutes INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(3) NOT NULL DEFAULT 'UGX',
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

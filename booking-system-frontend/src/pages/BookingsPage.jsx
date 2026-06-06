@@ -1,12 +1,64 @@
 import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { fetchBookings } from '../api/bookings';
+import { fetchBookings, updateBooking, deleteBooking } from '../api/bookings';
 
 export default function BookingsPage() {
   const { token, user } = useAuth();
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const reloadBookings = async () => {
+    try {
+      const result = await fetchBookings(token);
+      setBookings(result.bookings || []);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDeleteBooking = async (bookingId) => {
+    if (!window.confirm('Are you sure you want to delete this booking?')) return;
+
+    setError('');
+    setMessage('');
+    setLoading(true);
+
+    try {
+      await deleteBooking(bookingId, token);
+      setMessage('Booking deleted successfully.');
+      await reloadBookings();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isSessionStarted = (booking) => {
+    const status = String(booking?.status || '').toLowerCase();
+    return ['started', 'live', 'in progress', 'in-session', 'ongoing'].includes(status);
+  };
+
+  const handleStartSession = async (bookingId) => {
+    setError('');
+    setMessage('');
+    setLoading(true);
+
+    try {
+      await updateBooking(bookingId, { status: 'started' }, token);
+      setMessage('Live session started.');
+      await reloadBookings();
+      navigate('/created-sessions');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     async function loadBookings() {
@@ -40,6 +92,7 @@ export default function BookingsPage() {
         </div>
 
         {error && <div className="status error">{error}</div>}
+        {message && <div className="status success">{message}</div>}
         {loading && <div className="status success">Loading bookings…</div>}
 
         <div className="booking-list">
@@ -64,7 +117,7 @@ export default function BookingsPage() {
                     <strong>Time:</strong> {booking.booking_time}
                   </p>
                   <p>
-                    <strong>Price:</strong> ${Number(booking.price).toFixed(2)}
+                    <strong>Price:</strong> {booking.currency || 'UGX'} {Number(booking.price).toFixed(2)}
                   </p>
                   <p>
                     <strong>Duration:</strong> {booking.duration_minutes} min
@@ -86,6 +139,45 @@ export default function BookingsPage() {
                     <p>{booking.notes}</p>
                   </div>
                 )}
+
+                <div className="booking-footer">
+                  {user?.role === 'provider' ? (
+                    isSessionStarted(booking) ? (
+                      <Link
+                        to={`/call/${booking.booking_id}`}
+                        state={{ booking }}
+                        className="button-link secondary"
+                      >
+                        Go to live session
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        className="button-link secondary"
+                        onClick={() => handleStartSession(booking.booking_id)}
+                        disabled={loading}
+                      >
+                        Start session
+                      </button>
+                    )
+                  ) : isSessionStarted(booking) ? (
+                    <Link
+                      to={`/call/${booking.booking_id}`}
+                      state={{ booking }}
+                      className="button-link secondary"
+                    >
+                      Join live call
+                    </Link>
+                  ) : (
+                    <button type="button" className="button-link secondary" disabled>
+                      Waiting for provider
+                    </button>
+                  )}
+
+                  <button type="button" className="delete-btn" onClick={() => handleDeleteBooking(booking.booking_id)} disabled={loading}>
+                    Delete
+                  </button>
+                </div>
               </article>
             ))
           )}

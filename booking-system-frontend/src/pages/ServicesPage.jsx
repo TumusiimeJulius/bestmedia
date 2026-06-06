@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { createService, fetchCategories, fetchProviderServices, fetchServices } from '../api/services';
+import { createService, fetchCategories, fetchProviderServices, fetchServices, updateService, deleteService } from '../api/services';
 import { createBooking } from '../api/bookings';
 
 const initialServiceForm = {
@@ -9,10 +10,31 @@ const initialServiceForm = {
   description: '',
   duration_minutes: '',
   price: '',
+  currency: 'UGX',
   is_active: true,
 };
 
+const currencyOptions = [
+  'UGX', 'AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG',
+  'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB',
+  'BRL', 'BSD', 'BTN', 'BWP', 'BYN', 'BZD', 'CAD', 'CDF', 'CHF', 'CLP',
+  'CNY', 'COP', 'CRC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD',
+  'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'FOK', 'GBP', 'GEL', 'GGP',
+  'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG',
+  'HUF', 'IDR', 'ILS', 'IMP', 'INR', 'IQD', 'IRR', 'ISK', 'JMD', 'JOD',
+  'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK',
+  'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK',
+  'MNT', 'MOP', 'MRU', 'MUR', 'MVR', 'MWK', 'MXN', 'MYR', 'MZN', 'NAD',
+  'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP',
+  'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD',
+  'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STN',
+  'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD',
+  'TZS', 'UAH', 'USD', 'UYU', 'UZS', 'VES', 'VND', 'VUV', 'WST', 'XAF',
+  'XCD', 'XOF', 'XPF', 'YER', 'ZAR', 'ZMW', 'ZWL',
+];
+
 export default function ServicesPage() {
+  const navigate = useNavigate();
   const { token, user } = useAuth();
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -21,6 +43,7 @@ export default function ServicesPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [editingServiceId, setEditingServiceId] = useState(null);
 
   useEffect(() => {
     async function loadData() {
@@ -28,7 +51,7 @@ export default function ServicesPage() {
         setError('');
         const [categoriesResult, servicesResult] = await Promise.all([
           fetchCategories(),
-          user?.role === 'provider' ? fetchProviderServices(token) : fetchServices(),
+          user?.role === 'client' ? fetchServices() : Promise.resolve({ services: [] }),
         ]);
         setCategories(categoriesResult.categories || []);
         setServices(servicesResult.services || []);
@@ -42,7 +65,7 @@ export default function ServicesPage() {
   }, [token, user]);
 
   const reloadServices = async () => {
-    const servicesResult = user.role === 'provider' ? await fetchProviderServices(token) : await fetchServices();
+    const servicesResult = user.role === 'client' ? await fetchServices() : { services: [] };
     setServices(servicesResult.services || []);
   };
 
@@ -61,17 +84,63 @@ export default function ServicesPage() {
     setLoading(true);
 
     try {
-      await createService(
-        {
+      if (editingServiceId) {
+        await updateService(editingServiceId, {
           ...serviceForm,
           category_id: serviceForm.category_id || null,
           duration_minutes: Number(serviceForm.duration_minutes),
           price: Number(serviceForm.price),
-        },
-        token
-      );
-      setMessage('Service created successfully.');
+        }, token);
+        setMessage('Service updated successfully.');
+        setEditingServiceId(null);
+      } else {
+        await createService(
+          {
+            ...serviceForm,
+            category_id: serviceForm.category_id || null,
+            duration_minutes: Number(serviceForm.duration_minutes),
+            price: Number(serviceForm.price),
+          },
+          token
+        );
+        setMessage('Service created successfully.');
+        if (user?.role === 'provider') {
+          navigate('/created-sessions');
+          return;
+        }
+      }
       setServiceForm(initialServiceForm);
+      await reloadServices();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditService = (service) => {
+    setEditingServiceId(service.service_id);
+    setServiceForm({
+      service_name: service.service_name,
+      category_id: service.category_id || '',
+      description: service.description || '',
+      duration_minutes: service.duration_minutes,
+      price: service.price,
+      currency: service.currency || 'UGX',
+      is_active: service.is_active === 1,
+    });
+  };
+
+  const handleDeleteService = async (serviceId) => {
+    if (!window.confirm('Are you sure you want to delete this service?')) return;
+
+    setError('');
+    setMessage('');
+    setLoading(true);
+
+    try {
+      await deleteService(serviceId, token);
+      setMessage('Service deleted successfully.');
       await reloadServices();
     } catch (err) {
       setError(err.message);
@@ -109,6 +178,7 @@ export default function ServicesPage() {
       );
       setMessage('Booking created successfully.');
       setBookingForms((current) => ({ ...current, [serviceId]: {} }));
+      navigate('/bookings');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -159,79 +229,116 @@ export default function ServicesPage() {
             </label>
             <label>
               Price
-              <input name="price" type="number" min="0" step="0.01" value={serviceForm.price} onChange={handleServiceChange} required />
+              <div className="price-input-row">
+                <select name="currency" value={serviceForm.currency} onChange={handleServiceChange}>
+                  {currencyOptions.map((currency) => (
+                    <option key={currency} value={currency}>
+                      {currency}
+                    </option>
+                  ))}
+                </select>
+                <input name="price" type="number" min="0" step="0.01" value={serviceForm.price} onChange={handleServiceChange} required />
+              </div>
             </label>
             <label className="checkbox-label">
               <input type="checkbox" name="is_active" checked={serviceForm.is_active} onChange={handleServiceChange} />
               Active service
             </label>
-            <button type="submit" disabled={loading}>
-              {loading ? 'Saving…' : 'Save service'}
-            </button>
+            <div className="form-buttons">
+              <button type="submit" disabled={loading}>
+                {loading ? 'Saving…' : editingServiceId ? 'Update service' : 'Save service'}
+              </button>
+              {editingServiceId && (
+                <button type="button" className="secondary" onClick={() => {
+                  setEditingServiceId(null);
+                  setServiceForm(initialServiceForm);
+                }} disabled={loading}>
+                  Cancel
+                </button>
+              )}
+            </div>
           </form>
         )}
 
         <div className="service-grid">
-          {services.map((service) => {
-            const bookingForm = bookingForms[service.service_id] || {};
-            return (
-              <article key={service.service_id} className="service-card">
-                <div className="service-card-header">
-                  <div>
-                    <h2>{service.service_name}</h2>
-                    <p className="service-meta">{service.category_name || 'Uncategorized'}</p>
+          {user?.role === 'provider' ? (
+            <div className="empty-state">
+              Your services will appear in the "Created Sessions" page after you create them.
+            </div>
+          ) : (
+            services.map((service) => {
+              const bookingForm = bookingForms[service.service_id] || {};
+              return (
+                <article key={service.service_id} className="service-card">
+                  <div className="service-card-header">
+                    <div>
+                      <h2>{service.service_name}</h2>
+                      <p className="service-meta">{service.category_name || 'Uncategorized'}</p>
+                    </div>
+                    <strong>
+                      {service.currency || 'UGX'} {Number(service.price).toFixed(2)}
+                    </strong>
                   </div>
-                  <strong>${Number(service.price).toFixed(2)}</strong>
-                </div>
-                <p>{service.description || 'No description provided.'}</p>
-                <div className="service-details">
-                  <span>Provider: {service.provider_name || 'Unknown'}</span>
-                  <span>Duration: {service.duration_minutes} min</span>
-                </div>
+                  <p>{service.description || 'No description provided.'}</p>
+                  <div className="service-details">
+                    <span>Provider: {service.provider_name || 'Unknown'}</span>
+                    <span>Duration: {service.duration_minutes} min</span>
+                  </div>
 
-                {user?.role === 'provider' ? (
-                  <div className="service-footer">
-                    <span>Status: {service.is_active ? 'Active' : 'Inactive'}</span>
-                  </div>
-                ) : (
-                  <div className="booking-panel">
-                    <label>
-                      Date
-                      <input
-                        type="date"
-                        name="booking_date"
-                        value={bookingForm.booking_date || ''}
-                        onChange={(event) => handleBookingChange(service.service_id, event)}
-                        required
-                      />
-                    </label>
-                    <label>
-                      Time
-                      <input
-                        type="time"
-                        name="booking_time"
-                        value={bookingForm.booking_time || ''}
-                        onChange={(event) => handleBookingChange(service.service_id, event)}
-                        required
-                      />
-                    </label>
-                    <label>
-                      Notes
-                      <textarea
-                        name="notes"
-                        rows="3"
-                        value={bookingForm.notes || ''}
-                        onChange={(event) => handleBookingChange(service.service_id, event)}
-                      />
-                    </label>
-                    <button type="button" onClick={() => handleBookService(service.service_id)} disabled={loading}>
-                      {loading ? 'Booking…' : 'Book this service'}
-                    </button>
-                  </div>
-                )}
-              </article>
-            );
-          })}
+                  {user?.role === 'provider' ? (
+                    <div className="service-footer">
+                      <div className="footer-top">
+                        <span>Status: {service.is_active ? 'Active' : 'Inactive'}</span>
+                      </div>
+                      <div className="action-buttons">
+                        <button type="button" className="edit-btn" onClick={() => handleEditService(service)} disabled={loading}>
+                          Edit
+                        </button>
+                        <button type="button" className="delete-btn" onClick={() => handleDeleteService(service.service_id)} disabled={loading}>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="booking-panel">
+                      <label>
+                        Date
+                        <input
+                          type="date"
+                          name="booking_date"
+                          value={bookingForm.booking_date || ''}
+                          onChange={(event) => handleBookingChange(service.service_id, event)}
+                          required
+                        />
+                      </label>
+                      <label>
+                        Time
+                        <input
+                          type="time"
+                          name="booking_time"
+                          value={bookingForm.booking_time || ''}
+                          onChange={(event) => handleBookingChange(service.service_id, event)}
+                          required
+                        />
+                      </label>
+                      <label>
+                        Notes
+                        <textarea
+                          name="notes"
+                          rows="3"
+                          value={bookingForm.notes || ''}
+                          onChange={(event) => handleBookingChange(service.service_id, event)}
+                        />
+                      </label>
+                      <button type="button" onClick={() => handleBookService(service.service_id)} disabled={loading}>
+                        {loading ? 'Booking…' : 'Book this service'}
+                      </button>
+                    </div>
+                  )}
+                </article>
+              );
+            })
+          )}
         </div>
       </section>
     </main>

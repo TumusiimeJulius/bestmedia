@@ -124,6 +124,17 @@ textarea {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
+.price-input-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 180px) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.price-input-row select,
+.price-input-row input {
+  min-width: 0;
+}
+
 input::placeholder,
 textarea::placeholder {
   color: #64748b;
@@ -183,6 +194,150 @@ button:disabled {
 button:focus-visible {
   outline: 2px solid #93c5fd;
   outline-offset: 3px;
+}
+
+.form-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  grid-column: 1 / -1;
+}
+
+.form-buttons button {
+  min-height: 52px;
+  margin-top: 2px;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.edit-btn,
+.delete-btn {
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+}
+
+.edit-btn {
+  background: rgba(59, 130, 246, 0.16);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.edit-btn:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.24);
+}
+
+.delete-btn {
+  background: rgba(239, 68, 68, 0.16);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.delete-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.24);
+}
+
+.service-footer,
+.booking-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.layout-shell {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  width: min(100%, 1160px);
+  min-height: calc(100vh - 48px);
+  margin: auto;
+  align-items: stretch;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: calc(100vh - 48px);
+  padding: 28px;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 28px;
+}
+
+.brand-block {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-section-label {
+  margin: 0 0 12px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.78rem;
+}
+
+.sidebar-nav {
+  display: grid;
+  gap: 12px;
+}
+
+.nav-item {
+  display: block;
+  padding: 14px 18px;
+  border-radius: 16px;
+  color: #e2e8f0;
+  text-decoration: none;
+  background: rgba(148, 163, 184, 0.08);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.nav-item:hover {
+  background: rgba(96, 165, 250, 0.12);
+  transform: translateX(2px);
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(124, 58, 237, 0.18));
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #ffffff;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  display: grid;
+  gap: 16px;
+}
+
+.sidebar-user {
+  margin: 0;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+}
+
+.content-shell {
+  padding: 28px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 28px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.14);
 }
 
 .status {
@@ -408,72 +563,17 @@ button:focus-visible {
   }
 }
 
-.layout-shell {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
-  min-height: calc(100vh - 48px);
-}
-
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  padding: 28px 24px;
-  background: rgba(15, 23, 42, 0.95);
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  border-radius: 28px;
-  min-height: 500px;
-}
-
-.brand-block {
-  margin-bottom: 32px;
-}
-
-.eyebrow {
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  font-size: 0.75rem;
-  margin: 0 0 6px;
-}
-
 .sidebar h1 {
   margin: 0;
   font-size: 1.75rem;
 }
 
-.sidebar-nav {
-  display: grid;
-  gap: 12px;
-  margin-bottom: auto;
-}
-
-.sidebar-nav a {
-  padding: 14px 18px;
-  border-radius: 16px;
-  color: #e2e8f0;
-  text-decoration: none;
-  background: rgba(15, 23, 42, 0.7);
-  transition: background 0.2s ease;
-}
-
-.sidebar-nav a.active,
-.sidebar-nav a:hover {
-  background: #1e293b;
-}
-
-.sidebar-footer {
-  display: grid;
-  gap: 14px;
-  margin-top: 32px;
-}
-
-.sidebar-user {
-  margin: 0;
-  color: #94a3b8;
-}
-
 .content-shell {
+  padding: 28px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 28px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.14);
   min-height: 500px;
 }
 
@@ -514,6 +614,62 @@ button:focus-visible {
   text-decoration: none;
   font-weight: 700;
   padding: 0 16px;
+}
+
+.button-link.secondary {
+  background: #475569;
+}
+
+.booking-footer,
+.call-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.booking-footer {
+  align-items: center;
+}
+
+.call-shell {
+  width: min(100%, 1160px);
+  margin: auto;
+}
+
+.call-panel {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 28px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.14);
+  padding: 28px;
+}
+
+.call-details {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: #cbd5e1;
+}
+
+.call-details code {
+  display: inline-block;
+  padding: 4px 8px;
+  background: rgba(148, 163, 184, 0.12);
+  border-radius: 8px;
+}
+
+.call-frame {
+  min-height: 70vh;
+  max-height: 780px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.call-actions {
+  margin-top: 22px;
 }
 
 .service-form {

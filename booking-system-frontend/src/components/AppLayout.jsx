@@ -15,9 +15,21 @@ export default function AppLayout() {
         </div>
 
         <nav className="sidebar-nav">
-          <NavLink to="/dashboard">Overview</NavLink>
-          <NavLink to="/services">Services</NavLink>
-          <NavLink to="/bookings">Bookings</NavLink>
+          <p className="sidebar-section-label">Navigation</p>
+          <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+            Overview
+          </NavLink>
+          <NavLink to="/services" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+            Services
+          </NavLink>
+          <NavLink to="/bookings" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+            Bookings
+          </NavLink>
+          {user?.role === 'provider' && (
+            <NavLink to="/created-sessions" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+              Created sessions
+            </NavLink>
+          )}
         </nav>
 
         <div className="sidebar-footer">

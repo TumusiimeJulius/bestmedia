@@ -9,6 +9,8 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import OverviewPage from './pages/OverviewPage';
 import ServicesPage from './pages/ServicesPage';
 import BookingsPage from './pages/BookingsPage';
+import ProviderSessionsPage from './pages/ProviderSessionsPage';
+import CallPage from './pages/CallPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function AppRoutes() {
@@ -31,6 +33,8 @@ function AppRoutes() {
         <Route path="/dashboard" element={<OverviewPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/bookings" element={<BookingsPage />} />
+        <Route path="/created-sessions" element={<ProviderSessionsPage />} />
+        <Route path="/call/:bookingId" element={<CallPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

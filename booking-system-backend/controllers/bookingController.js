@@ -1,5 +1,12 @@
 const db = require('../config/db');
 
+async function ensureServiceCurrencyColumn() {
+  const [columns] = await db.query("SHOW COLUMNS FROM services LIKE 'currency'");
+  if (!columns.length) {
+    await db.query("ALTER TABLE services ADD COLUMN currency VARCHAR(3) NOT NULL DEFAULT 'UGX' AFTER price");
+  }
+}
+
 const createBooking = async (req, res) => {
   try {
     const clientId = req.user.user_id;
@@ -27,10 +34,11 @@ const createBooking = async (req, res) => {
 
 const getBookings = async (req, res) => {
   try {
+    await ensureServiceCurrencyColumn();
     if (req.user.role === 'provider') {
       const providerId = req.user.user_id;
       const [bookings] = await db.query(
-        `SELECT b.*, s.service_name, s.price, s.duration_minutes, c.category_name,
+        `SELECT b.*, s.service_name, s.price, s.currency, s.duration_minutes, c.category_name,
                 u.full_name AS client_name, u.email AS client_email
          FROM bookings b
          JOIN services s ON b.service_id = s.service_id
@@ -43,9 +51,11 @@ const getBookings = async (req, res) => {
       return res.json({ bookings });
     }
 
+    await ensureServiceCurrencyColumn();
+
     const clientId = req.user.user_id;
     const [bookings] = await db.query(
-      `SELECT b.*, s.service_name, s.price, s.duration_minutes, c.category_name,
+      `SELECT b.*, s.service_name, s.price, s.currency, s.duration_minutes, c.category_name,
               u.full_name AS provider_name, u.email AS provider_email
        FROM bookings b
        JOIN services s ON b.service_id = s.service_id
@@ -63,7 +73,88 @@ const getBookings = async (req, res) => {
   }
 };
 
+const updateBooking = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const bookingId = req.params.id;
+    const { booking_date, booking_time, notes, status } = req.body;
+
+    const [existing] = await db.query(
+      `SELECT b.*, s.provider_id FROM bookings b
+       JOIN services s ON b.service_id = s.service_id
+       WHERE b.booking_id = ?`,
+      [bookingId]
+    );
+
+    if (!existing.length) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    const isProvider = existing[0].provider_id === userId;
+    const isClient = existing[0].client_id === userId;
+
+    if (!isProvider && !isClient) {
+      return res.status(403).json({ message: 'Unauthorized to update this booking' });
+    }
+
+    const updates = {};
+    if (booking_date !== undefined) updates.booking_date = booking_date;
+    if (booking_time !== undefined) updates.booking_time = booking_time;
+    if (notes !== undefined) updates.notes = notes;
+    if (status !== undefined && isProvider) updates.status = status;
+
+    const updateFields = Object.keys(updates)
+      .map((key) => `${key} = ?`)
+      .join(', ');
+    const updateValues = Object.values(updates);
+
+    await db.query(`UPDATE bookings SET ${updateFields} WHERE booking_id = ?`, [
+      ...updateValues,
+      bookingId,
+    ]);
+
+    res.json({ message: 'Booking updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Unable to update booking' });
+  }
+};
+
+const deleteBooking = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const bookingId = req.params.id;
+
+    const [existing] = await db.query(
+      `SELECT b.*, s.provider_id FROM bookings b
+       JOIN services s ON b.service_id = s.service_id
+       WHERE b.booking_id = ?`,
+      [bookingId]
+    );
+
+    if (!existing.length) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    const isProvider = existing[0].provider_id === userId;
+    const isClient = existing[0].client_id === userId;
+
+    if (!isProvider && !isClient) {
+      return res.status(403).json({ message: 'Unauthorized to delete this booking' });
+    }
+
+    await db.query('DELETE FROM bookings WHERE booking_id = ?', [bookingId]);
+
+    res.json({ message: 'Booking deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Unable to delete booking' });
+  }
+};
+
 module.exports = {
   createBooking,
   getBookings,
+  updateBooking,
+  deleteBooking,
 };
