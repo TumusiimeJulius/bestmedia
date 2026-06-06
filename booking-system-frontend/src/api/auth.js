@@ -23,3 +23,15 @@ export function registerUser(data) {
 export function loginUser(data) {
   return sendRequest('login', data);
 }
+
+export function forgotPassword(data) {
+  return sendRequest('forgot-password', data);
+}
+
+export function verifyResetCode(data) {
+  return sendRequest('verify-reset-code', data);
+}
+
+export function resetPassword(data) {
+  return sendRequest('reset-password', data);
+}

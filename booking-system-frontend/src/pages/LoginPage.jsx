@@ -47,7 +47,10 @@ export default function LoginPage() {
           </label>
 
           <label>
-            Password
+            <span className="label-row">
+              Password
+              <Link to="/forgot-password">Forgot password?</Link>
+            </span>
             <input type="password" name="password" value={form.password} onChange={handleChange} required />
           </label>
 

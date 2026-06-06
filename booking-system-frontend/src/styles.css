@@ -82,6 +82,20 @@ label {
   font-size: 0.95rem;
 }
 
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.label-row a {
+  color: #93c5fd;
+  text-decoration: none;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
 input,
 select,
 textarea {

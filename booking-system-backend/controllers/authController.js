@@ -130,8 +130,7 @@ async function sendResetEmail(toEmail, code) {
     const from = process.env.EMAIL_FROM || user;
 
     if (!host || !port || !user || !pass) {
-        console.error('SMTP not configured');
-        throw new Error('Email service not configured');
+        throw new Error('Email service is not configured. Add SMTP settings to the backend .env file.');
     }
 
     const transporter = nodemailer.createTransport({
@@ -171,7 +170,15 @@ const forgotPassword = async (req, res) => {
             [user.user_id, code, expiresAt]
         );
 
-        await sendResetEmail(user.email, code);
+        try {
+            await sendResetEmail(user.email, code);
+        } catch (emailError) {
+            await db.query(
+                'DELETE FROM password_reset_tokens WHERE user_id = ? AND token = ?',
+                [user.user_id, code]
+            );
+            throw emailError;
+        }
 
         res.json({ message: 'Reset code sent to email' });
     } catch (error) {

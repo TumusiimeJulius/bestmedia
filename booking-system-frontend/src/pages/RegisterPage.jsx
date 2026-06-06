@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../api/auth';
+import { countryCodes } from '../data/countryCodes';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ full_name: '', email: '', phone: '', password: '', role: 'client' });
+  const [form, setForm] = useState({ full_name: '', email: '', phone: '', dial_code: '+1', password: '', role: 'client' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
-    setForm({ ...form, [event.target.name]: event.target.value });
+    const { name, value } = event.target;
+    setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async (event) => {
@@ -20,9 +22,13 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const result = await registerUser(form);
+      // sanitize local phone (remove non-digits) and combine with dial code
+      const localDigits = (form.phone || '').replace(/\D+/g, '');
+      const combinedPhone = `${form.dial_code}${localDigits}`;
+      const payload = { ...form, phone: combinedPhone };
+      const result = await registerUser(payload);
       setSuccess(result.message || 'Account created successfully');
-      setForm({ full_name: '', email: '', phone: '', password: '', role: 'client' });
+      setForm({ full_name: '', email: '', phone: '', dial_code: '+1', password: '', role: 'client' });
       setTimeout(() => navigate('/login'), 1200);
     } catch (err) {
       setError(err.message || 'Unable to register');
@@ -53,7 +59,14 @@ export default function RegisterPage() {
           </label>
           <label>
             Phone number
-            <input type="tel" name="phone" value={form.phone} onChange={handleChange} required />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <select name="dial_code" value={form.dial_code} onChange={handleChange} style={{ minWidth: 160 }}>
+                {countryCodes.map((c) => (
+                  <option key={c.code} value={c.dial_code}>{c.name} ({c.dial_code})</option>
+                ))}
+              </select>
+              <input type="tel" name="phone" value={form.phone} onChange={handleChange} required style={{ flex: 1 }} />
+            </div>
           </label>
           <label>
             Password
