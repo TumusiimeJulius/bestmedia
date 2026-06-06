@@ -31,39 +31,53 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="page-shell">
-      <section className="panel auth-panel">
-        <div className="panel-header">
+    <main className="auth-shell">
+      <section className="auth-card auth-card-login">
+        <div className="auth-brand">
+          <p className="eyebrow">BestMedia Booking</p>
           <h1>Welcome back</h1>
-          <p>Sign in to access your booking dashboard and manage clients, services, and appointments.</p>
+          <p>Sign in to manage bookings, services, clients, and appointments from one organized dashboard.</p>
+
+          <div className="auth-highlights" aria-label="Platform highlights">
+            <span>Secure access</span>
+            <span>Live dashboard</span>
+            <span>Booking control</span>
+          </div>
         </div>
 
-        <form className="form-grid" onSubmit={handleSubmit}>
-          {error && <div className="status error">{error}</div>}
+        <div className="auth-form-panel">
+          <div className="panel-header">
+            <h2>Login</h2>
+            <p>Use your registered email and password.</p>
+          </div>
 
-          <label>
-            Email address
-            <input type="email" name="email" value={form.email} onChange={handleChange} required />
-          </label>
+          <form className="form-grid" onSubmit={handleSubmit}>
+            {error && <div className="status error">{error}</div>}
 
-          <label>
-            <span className="label-row">
-              Password
-              <Link to="/forgot-password">Forgot password?</Link>
-            </span>
-            <input type="password" name="password" value={form.password} onChange={handleChange} required />
-          </label>
+            <label>
+              Email address
+              <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="name@example.com" required />
+            </label>
 
-          <button type="submit" disabled={loading}>
-            {loading ? 'Signing in…' : 'Sign In'}
-          </button>
-        </form>
+            <label>
+              <span className="label-row">
+                Password
+                <Link to="/forgot-password">Forgot password?</Link>
+              </span>
+              <input type="password" name="password" value={form.password} onChange={handleChange} placeholder="Enter your password" required />
+            </label>
 
-        <footer className="form-footer">
-          <p>
-            Need an account? <Link to="/register">Register here</Link>
-          </p>
-        </footer>
+            <button type="submit" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
+
+          <footer className="form-footer">
+            <p>
+              Need an account? <Link to="/register">Create one</Link>
+            </p>
+          </footer>
+        </div>
       </section>
     </main>
   );
