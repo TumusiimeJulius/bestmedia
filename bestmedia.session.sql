@@ -832,3 +832,4 @@ ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
 CREATE INDEX idx_provider_profiles_is_archived ON provider_profiles(is_archived);
 //Add refund_payment_method to payments
 ALTER TABLE payments
+
