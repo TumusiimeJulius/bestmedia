@@ -3,39 +3,70 @@ import { useAuth } from '../context/AuthContext';
 
 export default function OverviewPage() {
   const { user } = useAuth();
+  const isProvider = user?.role === 'provider';
 
   return (
     <main className="page-shell overview-shell">
       <section className="panel overview-panel">
         <div className="panel-header">
           <p className="eyebrow">Dashboard</p>
-          <h1>Welcome back, {user?.role === 'provider' ? 'Provider' : 'Client'}</h1>
+          <h1>Welcome back, {isProvider ? 'Provider' : 'Client'}</h1>
           <p>
-            This dashboard is tailored to your account type. Browse services and create bookings as a client, or manage your services and incoming appointments as a provider.
+            {isProvider
+              ? 'Manage your service portfolio, review incoming bookings, and keep your profile aligned with client demand.'
+              : 'Book services quickly, track appointments, and stay organized with your upcoming bookings.'}
           </p>
         </div>
 
         <div className="overview-grid">
           <article className="overview-card">
-            <h2>Services</h2>
-            <p>{user?.role === 'provider' ? 'Manage services available for clients.' : 'Browse available provider services.'}</p>
+            <h2>{isProvider ? 'Service catalog' : 'Browse services'}</h2>
+            <p>
+              {isProvider
+                ? 'Create and update the services you offer, set pricing, and organize by category.'
+                : 'Explore provider services with clear pricing, duration, and provider details.'}
+            </p>
             <Link className="button-link" to="/services">
-              Go to Services
+              Manage services
             </Link>
           </article>
 
           <article className="overview-card">
-            <h2>Bookings</h2>
-            <p>{user?.role === 'provider' ? 'See client bookings for your services.' : 'Review your upcoming bookings.'}</p>
+            <h2>{isProvider ? 'Client bookings' : 'Upcoming bookings'}</h2>
+            <p>
+              {isProvider
+                ? 'See who booked your services and monitor booking times.'
+                : 'Track your appointments and view provider details in one place.'}
+            </p>
             <Link className="button-link" to="/bookings">
-              View Bookings
+              View bookings
             </Link>
           </article>
 
           <article className="overview-card">
-            <h2>Your account</h2>
+            <h2>Account</h2>
             <p>Role: {user?.role}</p>
             <p>User ID: {user?.user_id}</p>
+          </article>
+        </div>
+
+        <div className="overview-actions">
+          <article className="overview-card small-card">
+            <h3>Quick start</h3>
+            <p>
+              {isProvider
+                ? 'Add a new service and publish it so clients can book directly.'
+                : 'Search services and book a convenient time slot today.'}
+            </p>
+          </article>
+
+          <article className="overview-card small-card">
+            <h3>Tips</h3>
+            <p>
+              {isProvider
+                ? 'Keep your availability and rates updated for better client bookings.'
+                : 'Select a service, choose date/time, and confirm your booking instantly.'}
+            </p>
           </article>
         </div>
       </section>

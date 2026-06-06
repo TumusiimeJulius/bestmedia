@@ -421,3 +421,13 @@ button:focus-visible {
     min-height: auto;
   }
 }
+
+.overview-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.small-card {
+  padding: 22px;
+}
