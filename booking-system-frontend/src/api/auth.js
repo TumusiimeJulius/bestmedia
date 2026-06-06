@@ -1,33 +1,25 @@
-const BASE_URL = 'http://localhost:5000/api/auth';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000/api/auth';
 
-export async function registerUser(data) {
-  const response = await fetch(`${BASE_URL}/register`, {
+async function sendRequest(endpoint, payload) {
+  const response = await fetch(`${BASE_URL}/${endpoint}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload),
   });
 
   const body = await response.json();
   if (!response.ok) {
-    throw new Error(body.message || 'Registration failed');
+    throw new Error(body.message || 'Server error');
   }
   return body;
 }
 
-export async function loginUser(data) {
-  const response = await fetch(`${BASE_URL}/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+export function registerUser(data) {
+  return sendRequest('register', data);
+}
 
-  const body = await response.json();
-  if (!response.ok) {
-    throw new Error(body.message || 'Login failed');
-  }
-  return body;
+export function loginUser(data) {
+  return sendRequest('login', data);
 }
