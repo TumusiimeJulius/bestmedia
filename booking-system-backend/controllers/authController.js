@@ -8,38 +8,47 @@ const registerUser = async (req, res) => {
             full_name,
             email,
             phone,
-            password
+            password,
+            role = 'client'
         } = req.body;
 
-        const [existingUser] = await db.query(
-            "SELECT * FROM users WHERE email = ?",
-            [email]
-        );
-
-        if (existingUser.length > 0) {
+        const allowedRoles = ['client', 'provider', 'admin'];
+        if (!allowedRoles.includes(role)) {
             return res.status(400).json({
-                message: "Email already exists"
+                message: 'Invalid role selected'
             });
         }
 
-        const hashedPassword =
-            await bcrypt.hash(password, 10);
+        const [existingUser] = await db.query(
+            'SELECT * FROM users WHERE email = ? OR phone = ?',
+            [email, phone]
+        );
+
+        if (existingUser.length > 0) {
+            const conflict = existingUser[0].email === email ? 'Email' : 'Phone';
+            return res.status(400).json({
+                message: `${conflict} already exists`
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         await db.query(
             `INSERT INTO users
-            (full_name,email,phone,password_hash)
-            VALUES (?,?,?,?)`,
+            (full_name, email, phone, password_hash, role)
+            VALUES (?, ?, ?, ?, ?)`,
             [
                 full_name,
                 email,
                 phone,
-                hashedPassword
+                hashedPassword,
+                role
             ]
         );
 
         res.status(201).json({
             success: true,
-            message: "User registered successfully"
+            message: 'User registered successfully'
         });
 
     } catch (error) {
