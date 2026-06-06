@@ -181,7 +181,7 @@ export default function ServicesPage() {
                     <h2>{service.service_name}</h2>
                     <p className="service-meta">{service.category_name || 'Uncategorized'}</p>
                   </div>
-                  <strong>${service.price.toFixed(2)}</strong>
+                  <strong>${Number(service.price).toFixed(2)}</strong>
                 </div>
                 <p>{service.description || 'No description provided.'}</p>
                 <div className="service-details">
