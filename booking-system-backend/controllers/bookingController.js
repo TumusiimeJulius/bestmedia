@@ -7,8 +7,32 @@ async function ensureServiceCurrencyColumn() {
   }
 }
 
+async function ensureBookingFreeColumn() {
+  const [columns] = await db.query("SHOW COLUMNS FROM bookings LIKE 'is_free'");
+  if (!columns.length) {
+    await db.query("ALTER TABLE bookings ADD COLUMN is_free TINYINT(1) NOT NULL DEFAULT 0 AFTER notes");
+  }
+}
+
+async function ensureBookingStatusColumn() {
+  const [columns] = await db.query("SHOW FULL COLUMNS FROM bookings LIKE 'status'");
+  console.log('Booking status column check:', columns[0] || 'missing');
+  const expectedType = "enum('pending','paid','confirmed','started','completed','cancelled')";
+  if (!columns.length) {
+    console.log('Status column not found, creating...');
+    await db.query(`ALTER TABLE bookings ADD COLUMN status ${expectedType} NOT NULL DEFAULT 'pending'`);
+    console.log('Status column created');
+  } else if (columns[0].Type !== expectedType) {
+    console.log('Status column exists but has wrong type, altering from', columns[0].Type);
+    await db.query(`ALTER TABLE bookings MODIFY COLUMN status ${expectedType} NOT NULL DEFAULT 'pending'`);
+    await db.query("UPDATE bookings SET status = 'pending' WHERE status = '' OR status IS NULL");
+    console.log('Status column modified');
+  }
+}
+
 const createBooking = async (req, res) => {
   try {
+    await ensureBookingStatusColumn();
     const clientId = req.user.user_id;
     if (req.user.role === 'provider') {
       return res.status(403).json({ message: 'Only client accounts can create bookings' });
@@ -19,10 +43,17 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: 'Service, date and time are required' });
     }
 
+    await ensureBookingFreeColumn();
+    const [existingBookings] = await db.query(
+      'SELECT booking_id FROM bookings WHERE client_id = ? AND service_id = ?',
+      [clientId, service_id]
+    );
+    const is_free = existingBookings.length === 0 ? 1 : 0;
+
     await db.query(
-      `INSERT INTO bookings (client_id, service_id, booking_date, booking_time, notes)
-       VALUES (?, ?, ?, ?, ?)`,
-      [clientId, service_id, booking_date, booking_time, notes || null]
+      `INSERT INTO bookings (client_id, service_id, booking_date, booking_time, notes, is_free, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [clientId, service_id, booking_date, booking_time, notes || null, is_free, 'pending']
     );
 
     res.status(201).json({ message: 'Booking created successfully' });
@@ -35,7 +66,9 @@ const createBooking = async (req, res) => {
 const getBookings = async (req, res) => {
   try {
     await ensureServiceCurrencyColumn();
+    await ensureBookingStatusColumn();
     if (req.user.role === 'provider') {
+      await ensureBookingFreeColumn();
       const providerId = req.user.user_id;
       const [bookings] = await db.query(
         `SELECT b.*, s.service_name, s.price, s.currency, s.duration_minutes, c.category_name,
@@ -51,7 +84,7 @@ const getBookings = async (req, res) => {
       return res.json({ bookings });
     }
 
-    await ensureServiceCurrencyColumn();
+    await ensureBookingFreeColumn();
 
     const clientId = req.user.user_id;
     const [bookings] = await db.query(
@@ -75,6 +108,7 @@ const getBookings = async (req, res) => {
 
 const updateBooking = async (req, res) => {
   try {
+    await ensureBookingStatusColumn();
     const userId = req.user.user_id;
     const bookingId = req.params.id;
     const { booking_date, booking_time, notes, status } = req.body;
@@ -103,10 +137,15 @@ const updateBooking = async (req, res) => {
     if (notes !== undefined) updates.notes = notes;
     if (status !== undefined && isProvider) updates.status = status;
 
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: 'No valid fields to update' });
+    }
+
     const updateFields = Object.keys(updates)
       .map((key) => `${key} = ?`)
       .join(', ');
     const updateValues = Object.values(updates);
+    console.log('Booking update payload:', bookingId, updates, updateFields, updateValues);
 
     await db.query(`UPDATE bookings SET ${updateFields} WHERE booking_id = ?`, [
       ...updateValues,
@@ -115,7 +154,7 @@ const updateBooking = async (req, res) => {
 
     res.json({ message: 'Booking updated successfully' });
   } catch (error) {
-    console.error(error);
+    console.error('Update booking error:', error.message, error.code);
     res.status(500).json({ message: 'Unable to update booking' });
   }
 };

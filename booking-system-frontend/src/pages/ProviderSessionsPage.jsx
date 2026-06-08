@@ -120,12 +120,12 @@ export default function ProviderSessionsPage() {
                     className="button-link secondary"
                     onClick={() => handleViewBookings(service.service_id)}
                   >
-                    View bookings
+                    Start live session
                   </button>
                   <button
                     type="button"
                     className="button-link secondary"
-                    onClick={() => navigate('/services')}
+                    onClick={() => navigate('/services', { state: { editServiceId: service.service_id } })}
                   >
                     Edit service
                   </button>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createService, fetchCategories, fetchProviderServices, fetchServices, updateService, deleteService } from '../api/services';
 import { createBooking } from '../api/bookings';
@@ -35,6 +35,7 @@ const currencyOptions = [
 
 export default function ServicesPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { token, user } = useAuth();
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -49,12 +50,23 @@ export default function ServicesPage() {
     async function loadData() {
       try {
         setError('');
-        const [categoriesResult, servicesResult] = await Promise.all([
-          fetchCategories(),
-          user?.role === 'client' ? fetchServices() : Promise.resolve({ services: [] }),
-        ]);
+        const categoriesResult = await fetchCategories();
+        const servicesResult = user?.role === 'provider'
+          ? await fetchProviderServices(token)
+          : await fetchServices();
+
         setCategories(categoriesResult.categories || []);
         setServices(servicesResult.services || []);
+
+        const editServiceId = location.state?.editServiceId;
+        if (user?.role === 'provider' && editServiceId) {
+          const serviceToEdit = servicesResult.services?.find(
+            (service) => service.service_id === editServiceId
+          );
+          if (serviceToEdit) {
+            handleEditService(serviceToEdit);
+          }
+        }
       } catch (err) {
         setError(err.message);
       }
@@ -62,10 +74,25 @@ export default function ServicesPage() {
     if (token) {
       loadData();
     }
-  }, [token, user]);
+  }, [token, user, location.state?.editServiceId]);
+
+  function handleEditService(service) {
+    setEditingServiceId(service.service_id);
+    setServiceForm({
+      service_name: service.service_name,
+      category_id: service.category_id || '',
+      description: service.description || '',
+      duration_minutes: service.duration_minutes,
+      price: service.price,
+      currency: service.currency || 'UGX',
+      is_active: service.is_active === 1,
+    });
+  }
 
   const reloadServices = async () => {
-    const servicesResult = user.role === 'client' ? await fetchServices() : { services: [] };
+    const servicesResult = user?.role === 'provider'
+      ? await fetchProviderServices(token)
+      : await fetchServices();
     setServices(servicesResult.services || []);
   };
 
@@ -93,6 +120,11 @@ export default function ServicesPage() {
         }, token);
         setMessage('Service updated successfully.');
         setEditingServiceId(null);
+
+        if (location.state?.editServiceId) {
+          navigate('/created-sessions');
+          return;
+        }
       } else {
         await createService(
           {
@@ -116,19 +148,6 @@ export default function ServicesPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleEditService = (service) => {
-    setEditingServiceId(service.service_id);
-    setServiceForm({
-      service_name: service.service_name,
-      category_id: service.category_id || '',
-      description: service.description || '',
-      duration_minutes: service.duration_minutes,
-      price: service.price,
-      currency: service.currency || 'UGX',
-      is_active: service.is_active === 1,
-    });
   };
 
   const handleDeleteService = async (serviceId) => {

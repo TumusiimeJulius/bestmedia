@@ -89,7 +89,7 @@ CREATE TABLE bookings (
     service_id INT NOT NULL,
     booking_date DATE NOT NULL,
     booking_time TIME NOT NULL,
-    status ENUM('pending','paid','confirmed','completed','cancelled') DEFAULT 'pending',
+    status ENUM('pending','paid','confirmed','started','completed','cancelled') DEFAULT 'pending',
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

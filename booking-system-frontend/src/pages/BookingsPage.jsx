@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { fetchBookings, updateBooking, deleteBooking } from '../api/bookings';
 
 export default function BookingsPage() {
   const { token, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -43,6 +44,18 @@ export default function BookingsPage() {
     return ['started', 'live', 'in progress', 'in-session', 'ongoing'].includes(status);
   };
 
+  const isSessionEnded = (booking) => {
+    const status = String(booking?.status || '').toLowerCase();
+    return ['completed', 'ended', 'finished'].includes(status);
+  };
+
+  const isSessionPending = (booking) => {
+    const status = String(booking?.status || 'pending').toLowerCase();
+    return ['pending', 'awaiting', 'requested', 'new', ''].includes(status);
+  };
+
+  const isBookingFree = (booking) => Boolean(booking?.is_free);
+
   const handleStartSession = async (bookingId) => {
     setError('');
     setMessage('');
@@ -60,13 +73,38 @@ export default function BookingsPage() {
     }
   };
 
+  const handleEndSession = async (bookingId) => {
+    setError('');
+    setMessage('');
+    setLoading(true);
+
+    try {
+      await updateBooking(bookingId, { status: 'completed' }, token);
+      setMessage('Live session ended.');
+      await reloadBookings();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     async function loadBookings() {
       try {
         setError('');
         setLoading(true);
         const result = await fetchBookings(token);
-        setBookings(result.bookings || []);
+        let filteredBookings = result.bookings || [];
+
+        const filterServiceId = location.state?.filterServiceId;
+        if (filterServiceId) {
+          filteredBookings = filteredBookings.filter(
+            (booking) => String(booking.service_id) === String(filterServiceId)
+          );
+        }
+
+        setBookings(filteredBookings);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -76,7 +114,7 @@ export default function BookingsPage() {
     if (token) {
       loadBookings();
     }
-  }, [token]);
+  }, [token, location.state?.filterServiceId]);
 
   return (
     <main className="page-shell bookings-shell">
@@ -117,7 +155,10 @@ export default function BookingsPage() {
                     <strong>Time:</strong> {booking.booking_time}
                   </p>
                   <p>
-                    <strong>Price:</strong> {booking.currency || 'UGX'} {Number(booking.price).toFixed(2)}
+                    <strong>Price:</strong>{' '}
+                    {isBookingFree(booking) && !isSessionEnded(booking)
+                      ? 'Free for first session'
+                      : `${booking.currency || 'UGX'} ${Number(booking.price).toFixed(2)}`}
                   </p>
                   <p>
                     <strong>Duration:</strong> {booking.duration_minutes} min
@@ -140,16 +181,50 @@ export default function BookingsPage() {
                   </div>
                 )}
 
+                {isBookingFree(booking) && !isSessionEnded(booking) && (
+                  <div className="status info">
+                    This first session is free. Future bookings with this service will require payment after completion.
+                  </div>
+                )}
+                {isBookingFree(booking) && isSessionEnded(booking) && (
+                  <div className="status success">
+                    Free first session completed. Future sessions with this service are paid.
+                  </div>
+                )}
+
                 <div className="booking-footer">
                   {user?.role === 'provider' ? (
-                    isSessionStarted(booking) ? (
-                      <Link
-                        to={`/call/${booking.booking_id}`}
-                        state={{ booking }}
+                    isSessionEnded(booking) ? (
+                      <button type="button" className="button-link secondary" disabled>
+                        Session ended
+                      </button>
+                    ) : isSessionPending(booking) ? (
+                      <button
+                        type="button"
                         className="button-link secondary"
+                        onClick={() => handleStartSession(booking.booking_id)}
+                        disabled={loading}
                       >
-                        Go to live session
-                      </Link>
+                        Activate session
+                      </button>
+                    ) : isSessionStarted(booking) ? (
+                      <>
+                        <Link
+                          to={`/call/${booking.booking_id}`}
+                          state={{ booking }}
+                          className="button-link secondary"
+                        >
+                          Go to live session
+                        </Link>
+                        <button
+                          type="button"
+                          className="button-link secondary"
+                          onClick={() => handleEndSession(booking.booking_id)}
+                          disabled={loading}
+                        >
+                          End session
+                        </button>
+                      </>
                     ) : (
                       <button
                         type="button"
@@ -157,16 +232,20 @@ export default function BookingsPage() {
                         onClick={() => handleStartSession(booking.booking_id)}
                         disabled={loading}
                       >
-                        Start session
+                        {isBookingFree(booking) ? 'Start free session' : 'Start session'}
                       </button>
                     )
+                  ) : isSessionEnded(booking) ? (
+                    <button type="button" className="button-link secondary" disabled>
+                      Session ended
+                    </button>
                   ) : isSessionStarted(booking) ? (
                     <Link
                       to={`/call/${booking.booking_id}`}
                       state={{ booking }}
                       className="button-link secondary"
                     >
-                      Join live call
+                      {isBookingFree(booking) ? 'Join free session' : 'Join live call'}
                     </Link>
                   ) : (
                     <button type="button" className="button-link secondary" disabled>
